@@ -113,6 +113,11 @@ namespace UGG.Combat
                 }
             }
         }
+
+        public Transform GetCurrentTarget()
+        {
+            return currentTarget;
+        }
         #endregion
     }
 }

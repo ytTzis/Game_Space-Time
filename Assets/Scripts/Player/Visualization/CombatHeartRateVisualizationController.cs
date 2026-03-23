@@ -1,0 +1,221 @@
+using UGG.Combat;
+using UGG.Health;
+using UnityEngine;
+
+public class CombatHeartRateVisualizationController : MonoBehaviour
+{
+    [Header("Scene References")]
+    [SerializeField] private PlayerCombatSystem playerCombatSystem;
+    [SerializeField] private PlayerHealthSystem playerHealthSystem;
+    [SerializeField] private Transform playerRoot;
+    [SerializeField] private Light mainDirectionalLight;
+    [SerializeField] private GameObject nonCombatUIRoot;
+    [SerializeField] private GameObject combatUIRoot;
+
+    [Header("Combat Detection")]
+    [SerializeField] private AIlogic[] enemySensors;
+
+    [Header("HP Color Stages")]
+    [SerializeField] private Color highHealthColor = new Color(0.15f, 0.95f, 0.85f);
+    [SerializeField] private Color midHealthColor = new Color(1.0f, 0.65f, 0.2f);
+    [SerializeField] private Color lowHealthColor = new Color(0.95f, 0.2f, 0.65f);
+    [SerializeField, Range(0f, 1f)] private float midHealthThreshold = 0.66f;
+    [SerializeField, Range(0f, 1f)] private float lowHealthThreshold = 0.33f;
+
+    [Header("Light Pulse")]
+    [SerializeField] private float combatBaseIntensity = 1.2f;
+    [SerializeField] private float pulseIntensityAmount = 0.8f;
+    [SerializeField] private float transitionSpeed = 4f;
+    [SerializeField] private int fallbackHeartRate = 72;
+    [SerializeField] private int minimumHeartRate = 45;
+    [SerializeField] private int maximumHeartRate = 180;
+
+    [Header("Debug Heart Rate")]
+    [SerializeField] private bool useDebugHeartRate;
+    [SerializeField] private int debugHeartRate = 72;
+
+    private Color defaultLightColor;
+    private float defaultLightIntensity;
+
+    private void Reset()
+    {
+        TryAutoBind();
+    }
+
+    private void Awake()
+    {
+        TryAutoBind();
+
+        if (mainDirectionalLight != null)
+        {
+            defaultLightColor = mainDirectionalLight.color;
+            defaultLightIntensity = mainDirectionalLight.intensity;
+        }
+    }
+
+    private void Update()
+    {
+        bool isInCombat = IsInCombat();
+        UpdateUIState(isInCombat);
+        UpdateDirectionalLight(isInCombat);
+    }
+
+    private void TryAutoBind()
+    {
+        if (playerCombatSystem == null)
+        {
+            playerCombatSystem = FindFirstObjectByType<PlayerCombatSystem>();
+        }
+
+        if (playerHealthSystem == null)
+        {
+            playerHealthSystem = FindFirstObjectByType<PlayerHealthSystem>();
+        }
+
+        if (playerRoot == null && playerCombatSystem != null)
+        {
+            playerRoot = playerCombatSystem.transform.root;
+        }
+
+        if (mainDirectionalLight == null)
+        {
+            Light[] lights = FindObjectsByType<Light>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            foreach (Light sceneLight in lights)
+            {
+                if (sceneLight.type == LightType.Directional)
+                {
+                    mainDirectionalLight = sceneLight;
+                    break;
+                }
+            }
+        }
+
+        if (enemySensors == null || enemySensors.Length == 0)
+        {
+            enemySensors = FindObjectsByType<AIlogic>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        }
+    }
+
+    private bool IsInCombat()
+    {
+        if (playerCombatSystem != null && playerCombatSystem.GetCurrentTarget() != null)
+        {
+            return true;
+        }
+
+        if (enemySensors == null)
+        {
+            return false;
+        }
+
+        foreach (AIlogic sensor in enemySensors)
+        {
+            if (sensor == null)
+            {
+                continue;
+            }
+
+            Transform currentTarget = sensor.GetCurrentTarget();
+            if (currentTarget == null)
+            {
+                continue;
+            }
+
+            if (playerRoot == null || currentTarget.root == playerRoot)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void UpdateUIState(bool isInCombat)
+    {
+        if (nonCombatUIRoot != null)
+        {
+            nonCombatUIRoot.SetActive(!isInCombat);
+        }
+
+        if (combatUIRoot != null)
+        {
+            combatUIRoot.SetActive(isInCombat);
+        }
+    }
+
+    private void UpdateDirectionalLight(bool isInCombat)
+    {
+        if (mainDirectionalLight == null)
+        {
+            return;
+        }
+
+        if (!isInCombat)
+        {
+            mainDirectionalLight.color = Color.Lerp(
+                mainDirectionalLight.color,
+                defaultLightColor,
+                Time.deltaTime * transitionSpeed);
+
+            mainDirectionalLight.intensity = Mathf.Lerp(
+                mainDirectionalLight.intensity,
+                defaultLightIntensity,
+                Time.deltaTime * transitionSpeed);
+            return;
+        }
+
+        Color targetColor = GetCombatColorFromHealth();
+        float targetIntensity = combatBaseIntensity + GetPulseValueFromHeartRate() * pulseIntensityAmount;
+
+        mainDirectionalLight.color = Color.Lerp(
+            mainDirectionalLight.color,
+            targetColor,
+            Time.deltaTime * transitionSpeed);
+
+        mainDirectionalLight.intensity = Mathf.Lerp(
+            mainDirectionalLight.intensity,
+            targetIntensity,
+            Time.deltaTime * transitionSpeed);
+    }
+
+    private Color GetCombatColorFromHealth()
+    {
+        if (playerHealthSystem == null)
+        {
+            return highHealthColor;
+        }
+
+        float healthNormalized = playerHealthSystem.HealthNormalized;
+        if (healthNormalized <= lowHealthThreshold)
+        {
+            return lowHealthColor;
+        }
+
+        if (healthNormalized <= midHealthThreshold)
+        {
+            return midHealthColor;
+        }
+
+        return highHealthColor;
+    }
+
+    public int GetActiveHeartRate()
+    {
+        int heartRate = useDebugHeartRate ? debugHeartRate : hyperateSocket.CurrentHeartRate;
+        if (heartRate <= 0)
+        {
+            heartRate = fallbackHeartRate;
+        }
+
+        return Mathf.Clamp(heartRate, minimumHeartRate, maximumHeartRate);
+    }
+
+    private float GetPulseValueFromHeartRate()
+    {
+        float beatsPerSecond = GetActiveHeartRate() / 60f;
+        float pulse = Mathf.Sin(Time.time * beatsPerSecond * Mathf.PI * 2f);
+        return (pulse + 1f) * 0.5f;
+    }
+}
+
+
