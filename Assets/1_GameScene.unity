@@ -31104,8 +31104,8 @@ MonoBehaviour:
   lowHealthColor: {r: 0.95, g: 0.2, b: 0.65, a: 1}
   midHealthThreshold: 0.66
   lowHealthThreshold: 0.33
-  combatBaseIntensity: 1.2
-  pulseIntensityAmount: 0.8
+  combatBaseIntensity: 0.2
+  pulseIntensityAmount: 1.8
   transitionSpeed: 4
   fallbackHeartRate: 72
   minimumHeartRate: 45
@@ -152351,7 +152351,7 @@ Light:
   m_Shape: 0
   m_Color: {r: 0.6313726, g: 0.73333335, b: 0.81960785, a: 1}
   m_Intensity: 6
-  m_Range: 12
+  m_Range: 7
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
