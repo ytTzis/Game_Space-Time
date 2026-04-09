@@ -16,25 +16,7 @@
 - `com.unity.timeline`：`1.7.7`
 - `com.unity.postprocessing`：`3.4.0`
 
-当前包管理源为：
-
-- `https://packages.unity.com`
-
-项目打开时出现缺少包或包版本错误的话，确认：
-
-1. Unity Editor 版本是否为 `2022.3.62f3 LTS`
-2. Package Manager 是否能够访问 `packages.unity.com`
-3. `Packages/manifest.json` 和 `Packages/packages-lock.json` 是否已正确拉取
-
-## 项目打开步骤
-
-1. Clone 或 Pull 最新的 `main` 分支
-2. 使用 Unity Hub 通过 `2022.3.62f3 LTS` 打开项目
-3. 等待包恢复和脚本编译完成
-4. 如果 Input System 提示重新导入或重新生成，请允许 Unity 执行完成
-5. 确认 `Assets/Scripts/Config/Input/InputController.cs` 没有报错
-
-## 当前重点内容
+## 当前内容
 
 - `Assets/1_GameScene.unity`
   - 心率可视化原型
