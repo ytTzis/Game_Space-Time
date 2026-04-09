@@ -20,7 +20,7 @@
 
 - `https://packages.unity.com`
 
-如果项目打开时出现缺少包或包版本错误，请优先确认：
+项目打开时出现缺少包或包版本错误的话，确认：
 
 1. Unity Editor 版本是否为 `2022.3.62f3`
 2. Package Manager 是否能够访问 `packages.unity.com`
@@ -44,7 +44,7 @@
 - `Assets/2_Game Scene.unity`
   - 环境与地图结构仍在继续完善
 
-## 队友同步说明
+## 同步说明
 
 - `Scene 3` 当前已经包含心率可视化相关对象和灯光调整内容
 - 本次同步同时更新了项目设置和包版本
