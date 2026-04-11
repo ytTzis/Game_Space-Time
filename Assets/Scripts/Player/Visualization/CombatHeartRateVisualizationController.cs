@@ -4,38 +4,50 @@ using UnityEngine;
 
 public class CombatHeartRateVisualizationController : MonoBehaviour
 {
-    [Header("Scene References")]
-    [SerializeField] private PlayerCombatSystem playerCombatSystem;
-    [SerializeField] private PlayerHealthSystem playerHealthSystem;
-    [SerializeField] private Transform playerRoot;
-    [SerializeField] private Light mainDirectionalLight;
-    [SerializeField] private GameObject nonCombatUIRoot;
-    [SerializeField] private GameObject combatUIRoot;
+    [Header("场景引用")]
+    [SerializeField, InspectorName("玩家战斗系统")] private PlayerCombatSystem playerCombatSystem;
+    [SerializeField, InspectorName("玩家生命系统")] private PlayerHealthSystem playerHealthSystem;
+    [SerializeField, InspectorName("玩家根对象")] private Transform playerRoot;
+    [SerializeField, InspectorName("主光源")] private Light mainDirectionalLight;
+    [SerializeField, InspectorName("非战斗UI根节点")] private GameObject nonCombatUIRoot;
+    [SerializeField, InspectorName("战斗UI根节点")] private GameObject combatUIRoot;
 
-    [Header("Combat Detection")]
-    [SerializeField] private AIlogic[] enemySensors;
+    [Header("战斗检测")]
+    [SerializeField, InspectorName("敌人感知器")] private AIlogic[] enemySensors;
 
-    [Header("HP Color Stages")]
-    [SerializeField] private Color highHealthColor = new Color(0.15f, 0.95f, 0.85f);
-    [SerializeField] private Color midHealthColor = new Color(1.0f, 0.65f, 0.2f);
-    [SerializeField] private Color lowHealthColor = new Color(0.95f, 0.2f, 0.65f);
-    [SerializeField, Range(0f, 1f)] private float midHealthThreshold = 0.66f;
-    [SerializeField, Range(0f, 1f)] private float lowHealthThreshold = 0.33f;
+    [Header("灯光响应设置")]
+    [SerializeField, InspectorName("启用主光源响应")] private bool affectMainDirectionalLight = true;
+    [SerializeField, InspectorName("启用灯组响应")] private bool affectResponsiveLights = true;
+    [SerializeField, InspectorName("响应灯组")] private Light[] responsiveLights;
+    [SerializeField, InspectorName("灯组额外脉动强度")] private float responsiveLightPulseAmount = 0.6f;
 
-    [Header("Light Pulse")]
-    [SerializeField] private float combatBaseIntensity = 1.2f;
-    [SerializeField] private float pulseIntensityAmount = 0.8f;
-    [SerializeField] private float transitionSpeed = 4f;
-    [SerializeField] private int fallbackHeartRate = 72;
-    [SerializeField] private int minimumHeartRate = 45;
-    [SerializeField] private int maximumHeartRate = 180;
+    [Header("生命值颜色阶段")]
+    [SerializeField, InspectorName("高生命颜色")] private Color highHealthColor = new Color(0.15f, 0.95f, 0.85f);
+    [SerializeField, InspectorName("中生命颜色")] private Color midHealthColor = new Color(1.0f, 0.65f, 0.2f);
+    [SerializeField, InspectorName("低生命颜色")] private Color lowHealthColor = new Color(0.95f, 0.2f, 0.65f);
+    [SerializeField, Range(0f, 1f), InspectorName("中生命阈值")] private float midHealthThreshold = 0.66f;
+    [SerializeField, Range(0f, 1f), InspectorName("低生命阈值")] private float lowHealthThreshold = 0.33f;
 
-    [Header("Debug Heart Rate")]
-    [SerializeField] private bool useDebugHeartRate;
-    [SerializeField] private int debugHeartRate = 72;
+    [Header("心跳脉动")]
+    [SerializeField, InspectorName("战斗基础亮度")] private float combatBaseIntensity = 1.2f;
+    [SerializeField, InspectorName("主光源脉动强度")] private float pulseIntensityAmount = 0.8f;
+    [SerializeField, InspectorName("过渡速度")] private float transitionSpeed = 4f;
+    [SerializeField, InspectorName("回退心率")] private int fallbackHeartRate = 72;
+    [SerializeField, InspectorName("最小心率")] private int minimumHeartRate = 45;
+    [SerializeField, InspectorName("最大心率")] private int maximumHeartRate = 180;
+
+    [Header("调试心率")]
+    [SerializeField, InspectorName("使用调试心率")] private bool useDebugHeartRate;
+    [SerializeField, InspectorName("调试心率值")] private int debugHeartRate = 72;
+
+    [Header("调试战斗状态")]
+    [SerializeField, InspectorName("使用调试战斗状态")] private bool useDebugCombatState;
+    [SerializeField, InspectorName("调试为战斗中")] private bool debugIsInCombat;
 
     private Color defaultLightColor;
     private float defaultLightIntensity;
+    private Color[] responsiveLightDefaultColors;
+    private float[] responsiveLightDefaultIntensities;
 
     private void Reset()
     {
@@ -45,19 +57,19 @@ public class CombatHeartRateVisualizationController : MonoBehaviour
     private void Awake()
     {
         TryAutoBind();
+        CacheDefaultLightState();
+    }
 
-        if (mainDirectionalLight != null)
-        {
-            defaultLightColor = mainDirectionalLight.color;
-            defaultLightIntensity = mainDirectionalLight.intensity;
-        }
+    private void OnValidate()
+    {
+        ClampHeartRateRange();
     }
 
     private void Update()
     {
-        bool isInCombat = IsInCombat();
+        bool isInCombat = GetActiveCombatState();
         UpdateUIState(isInCombat);
-        UpdateDirectionalLight(isInCombat);
+        UpdateLights(isInCombat);
     }
 
     private void TryAutoBind()
@@ -90,9 +102,53 @@ public class CombatHeartRateVisualizationController : MonoBehaviour
             }
         }
 
+        if ((responsiveLights == null || responsiveLights.Length == 0) && mainDirectionalLight != null)
+        {
+            responsiveLights = new[] { mainDirectionalLight };
+        }
+
         if (enemySensors == null || enemySensors.Length == 0)
         {
             enemySensors = FindObjectsByType<AIlogic>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        }
+    }
+
+    private void CacheDefaultLightState()
+    {
+        if (mainDirectionalLight != null)
+        {
+            defaultLightColor = mainDirectionalLight.color;
+            defaultLightIntensity = mainDirectionalLight.intensity;
+        }
+
+        if (responsiveLights == null)
+        {
+            responsiveLightDefaultColors = null;
+            responsiveLightDefaultIntensities = null;
+            return;
+        }
+
+        responsiveLightDefaultColors = new Color[responsiveLights.Length];
+        responsiveLightDefaultIntensities = new float[responsiveLights.Length];
+
+        for (int i = 0; i < responsiveLights.Length; i++)
+        {
+            Light responsiveLight = responsiveLights[i];
+            if (responsiveLight == null)
+            {
+                continue;
+            }
+
+            responsiveLightDefaultColors[i] = responsiveLight.color;
+            responsiveLightDefaultIntensities[i] = responsiveLight.intensity;
+        }
+    }
+
+    private void ClampHeartRateRange()
+    {
+        if (maximumHeartRate < minimumHeartRate)
+        {
+            maximumHeartRate = minimumHeartRate;
         }
     }
 
@@ -130,6 +186,16 @@ public class CombatHeartRateVisualizationController : MonoBehaviour
         return false;
     }
 
+    private bool GetActiveCombatState()
+    {
+        if (useDebugCombatState)
+        {
+            return debugIsInCombat;
+        }
+
+        return IsInCombat();
+    }
+
     private void UpdateUIState(bool isInCombat)
     {
         if (nonCombatUIRoot != null)
@@ -143,9 +209,19 @@ public class CombatHeartRateVisualizationController : MonoBehaviour
         }
     }
 
-    private void UpdateDirectionalLight(bool isInCombat)
+    private void UpdateLights(bool isInCombat)
     {
-        if (mainDirectionalLight == null)
+        Color targetColor = GetCombatColorFromHealth();
+        float pulseValue = GetPulseValueFromHeartRate();
+        float mainLightTargetIntensity = combatBaseIntensity + pulseValue * pulseIntensityAmount;
+
+        UpdateMainDirectionalLight(isInCombat, targetColor, mainLightTargetIntensity);
+        UpdateResponsiveLights(isInCombat, targetColor, pulseValue);
+    }
+
+    private void UpdateMainDirectionalLight(bool isInCombat, Color targetColor, float targetIntensity)
+    {
+        if (!affectMainDirectionalLight || mainDirectionalLight == null)
         {
             return;
         }
@@ -164,9 +240,6 @@ public class CombatHeartRateVisualizationController : MonoBehaviour
             return;
         }
 
-        Color targetColor = GetCombatColorFromHealth();
-        float targetIntensity = combatBaseIntensity + GetPulseValueFromHeartRate() * pulseIntensityAmount;
-
         mainDirectionalLight.color = Color.Lerp(
             mainDirectionalLight.color,
             targetColor,
@@ -176,6 +249,57 @@ public class CombatHeartRateVisualizationController : MonoBehaviour
             mainDirectionalLight.intensity,
             targetIntensity,
             Time.deltaTime * transitionSpeed);
+    }
+
+    private void UpdateResponsiveLights(bool isInCombat, Color targetColor, float pulseValue)
+    {
+        if (!affectResponsiveLights || responsiveLights == null || responsiveLights.Length == 0)
+        {
+            return;
+        }
+
+        if (responsiveLightDefaultColors == null || responsiveLightDefaultColors.Length != responsiveLights.Length)
+        {
+            CacheDefaultLightState();
+        }
+
+        for (int i = 0; i < responsiveLights.Length; i++)
+        {
+            Light responsiveLight = responsiveLights[i];
+            if (responsiveLight == null)
+            {
+                continue;
+            }
+
+            Color defaultColor = responsiveLightDefaultColors[i];
+            float defaultIntensity = responsiveLightDefaultIntensities[i];
+
+            if (!isInCombat)
+            {
+                responsiveLight.color = Color.Lerp(
+                    responsiveLight.color,
+                    defaultColor,
+                    Time.deltaTime * transitionSpeed);
+
+                responsiveLight.intensity = Mathf.Lerp(
+                    responsiveLight.intensity,
+                    defaultIntensity,
+                    Time.deltaTime * transitionSpeed);
+                continue;
+            }
+
+            float targetIntensity = defaultIntensity + pulseValue * responsiveLightPulseAmount;
+
+            responsiveLight.color = Color.Lerp(
+                responsiveLight.color,
+                targetColor,
+                Time.deltaTime * transitionSpeed);
+
+            responsiveLight.intensity = Mathf.Lerp(
+                responsiveLight.intensity,
+                targetIntensity,
+                Time.deltaTime * transitionSpeed);
+        }
     }
 
     private Color GetCombatColorFromHealth()

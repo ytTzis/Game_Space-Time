@@ -77567,6 +77567,10 @@ MonoBehaviour:
   enemySensors:
   - {fileID: 0}
   - {fileID: 0}
+  affectMainDirectionalLight: 1
+  affectResponsiveLights: 1
+  responsiveLights: []
+  responsiveLightPulseAmount: 0.6
   highHealthColor: {r: 0.15, g: 0.95, b: 0.85, a: 1}
   midHealthColor: {r: 1, g: 0.65, b: 0.2, a: 1}
   lowHealthColor: {r: 0.95, g: 0.2, b: 0.65, a: 1}
@@ -77580,6 +77584,8 @@ MonoBehaviour:
   maximumHeartRate: 180
   useDebugHeartRate: 0
   debugHeartRate: 72
+  useDebugCombatState: 0
+  debugIsInCombat: 0
 --- !u!4 &1634031262
 Transform:
   m_ObjectHideFlags: 0
