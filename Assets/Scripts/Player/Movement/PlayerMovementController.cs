@@ -196,6 +196,7 @@ namespace UGG.Move
                     }
                     
                 }
+
                 else
                 {
                     isOnCrouch = true;
