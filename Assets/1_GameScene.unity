@@ -31099,6 +31099,10 @@ MonoBehaviour:
   enemySensors:
   - {fileID: 6868576831173830795}
   - {fileID: 6868576831173830788}
+  affectMainDirectionalLight: 1
+  affectResponsiveLights: 1
+  responsiveLights: []
+  responsiveLightPulseAmount: 0.6
   highHealthColor: {r: 0.15, g: 0.95, b: 0.85, a: 1}
   midHealthColor: {r: 1, g: 0.65, b: 0.2, a: 1}
   lowHealthColor: {r: 0.95, g: 0.2, b: 0.65, a: 1}
@@ -31112,6 +31116,8 @@ MonoBehaviour:
   maximumHeartRate: 180
   useDebugHeartRate: 0
   debugHeartRate: 72
+  useDebugCombatState: 0
+  debugIsInCombat: 0
 --- !u!4 &396441206
 Transform:
   m_ObjectHideFlags: 0
@@ -58110,7 +58116,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5648783884062437549, guid: 6a17a10886a8a22499b7ba911b2ed474, type: 3}
   m_PrefabInstance: {fileID: 7794810834438371117}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 7794810834438371118}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b36170a451e85904589901e457ffbc27, type: 3}
@@ -158598,8 +158604,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7074656429722175071, guid: 6a17a10886a8a22499b7ba911b2ed474, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7794810834438371119}
   m_SourcePrefab: {fileID: 100100000, guid: 6a17a10886a8a22499b7ba911b2ed474, type: 3}
+--- !u!1 &7794810834438371118 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7074656429722175071, guid: 6a17a10886a8a22499b7ba911b2ed474, type: 3}
+  m_PrefabInstance: {fileID: 7794810834438371117}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7794810834438371119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7794810834438371118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 714409e72ffd0ef4daa222d57cd5ea0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  arousalSystem: {fileID: 0}
+  staminaConsumeMultiplier: 1
+  staminaRecoveryMultiplier: 1
+  hearingMultiplier: 1
+  tinnitusIntensity: 0
+  screenShakeIntensity: 0
+  effectSmoothSpeed: 5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

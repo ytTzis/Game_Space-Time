@@ -177,7 +177,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7074656429722175071, guid: 6a17a10886a8a22499b7ba911b2ed474, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1275815}
   m_SourcePrefab: {fileID: 100100000, guid: 6a17a10886a8a22499b7ba911b2ed474, type: 3}
 --- !u!4 &1275810 stripped
 Transform:
@@ -205,12 +208,36 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5648783884062437549, guid: 6a17a10886a8a22499b7ba911b2ed474, type: 3}
   m_PrefabInstance: {fileID: 1275809}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1275814}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b36170a451e85904589901e457ffbc27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1275814 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7074656429722175071, guid: 6a17a10886a8a22499b7ba911b2ed474, type: 3}
+  m_PrefabInstance: {fileID: 1275809}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1275815
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1275814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 714409e72ffd0ef4daa222d57cd5ea0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  arousalSystem: {fileID: 0}
+  staminaConsumeMultiplier: 1
+  staminaRecoveryMultiplier: 1
+  hearingMultiplier: 1
+  tinnitusIntensity: 0
+  screenShakeIntensity: 0
+  effectSmoothSpeed: 5
 --- !u!1 &5334178
 GameObject:
   m_ObjectHideFlags: 0
@@ -78729,6 +78756,69 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cacfcfb390f411b41929e2d45eb98e29, type: 3}
+--- !u!1 &1663153026
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1663153029}
+  - component: {fileID: 1663153028}
+  m_Layer: 0
+  m_Name: HeartRateSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1663153028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1663153026}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33f6068247d8c0e42aaf2807a341166b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  calibrationDuration: 20
+  autoStartCalibration: 1
+  shortWindow: 5
+  longWindow: 15
+  sampleInterval: 0.2
+  suddenIncreaseThreshold: 0.15
+  sustainedAboveBaselineThreshold: 0.12
+  recoverThreshold: 0.05
+  sustainedTenseTimeNeeded: 8
+  recoverTimeNeeded: 10
+  panicHoldTime: 1.5
+  currentHeartRate: 0
+  baselineHeartRate: 0
+  shortAverage: 0
+  previousShortAverage: 0
+  longAverage: 0
+  isCalibrating: 0
+  suddenTensionTriggered: 0
+  currentState: 1
+--- !u!4 &1663153029
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1663153026}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -20.073221, y: 0.10508526, z: -8.411494}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1663936405
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -100684,3 +100774,4 @@ SceneRoots:
   - {fileID: 2001979881}
   - {fileID: 1634031262}
   - {fileID: 1129787058}
+  - {fileID: 1663153029}
