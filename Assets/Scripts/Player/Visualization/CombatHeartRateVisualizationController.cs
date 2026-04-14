@@ -14,6 +14,7 @@ public class CombatHeartRateVisualizationController : MonoBehaviour
 
     [Header("战斗检测")]
     [SerializeField, InspectorName("敌人感知器")] private AIlogic[] enemySensors;
+    [SerializeField, InspectorName("敌人判定距离")] private float enemyCombatDistance = 8f;
 
     [Header("灯光响应设置")]
     [SerializeField, InspectorName("启用主光源响应")] private bool affectMainDirectionalLight = true;
@@ -179,6 +180,10 @@ public class CombatHeartRateVisualizationController : MonoBehaviour
 
             if (playerRoot == null || currentTarget.root == playerRoot)
             {
+                if (sensor.GetCurrentTargetDistance() > enemyCombatDistance)
+                {
+                    continue;
+                }
                 return true;
             }
         }

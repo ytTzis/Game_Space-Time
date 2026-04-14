@@ -8,6 +8,5 @@ public class AISleep : StateActionSO
 {
     public override void OnUpdate()
     {
-        Debug.Log("111111");
     }
 }

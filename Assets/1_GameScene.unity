@@ -85987,8 +85987,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1da35206656ff461f9ea567f58b84144, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  websocketToken: qGaQGofbHDuXUb77XuxyVEV0eexjD1KmUmJtP6U3LV80aU1F78b4rwvnQb4wO5y8
-  hyperateID: JNR8EKX
+  websocketToken: WqUFS31Br1CochGoJQLtAahFBkMmvVfAXKUPJXlF
+  hyperateID: A9B8BUF
+  dontDestroyOnLoad: 1
+  autoConnectOnStart: 1
+  connectionStatus: Not started
+  joinedHeartRateChannel: 0
+  receivedHeartRate: 0
+  heartbeatSentCount: 0
+  lastSocketEvent: None
+  lastError: 
+  lastRawMessage: 
+  lastHeartRateText: 0
+  textBox: {fileID: 0}
 --- !u!114 &1180567193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -87859,7 +87870,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 73, y: -20}
+  m_AnchoredPosition: {x: -33.8, y: -11.1}
   m_SizeDelta: {x: 180, y: 40}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1189544854
@@ -87926,8 +87937,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16
-  m_fontSizeBase: 16
+  m_fontSize: 32
+  m_fontSizeBase: 32
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -87962,7 +87973,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -36.86853, y: 0, z: -11.152313, w: 0}
+  m_margin: {x: 27.265808, y: 0, z: -11.152313, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0

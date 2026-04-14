@@ -17,9 +17,12 @@ namespace UGG.Combat
         //检测
         [SerializeField, Header("检测敌人")] private Transform detectionCenter;
         [SerializeField] private float detectionRang;
+        [SerializeField, Header("离开战斗缓冲(秒)"), Range(0f, 5f)]
+        private float exitCombatDelay = 1.5f;
 
         //缓存
         private Collider[] detectionedTarget = new Collider[1];
+        private float outOfRangeTimer;
         
         private void Update()
         {
@@ -105,11 +108,31 @@ namespace UGG.Combat
         
         private void UpdateCurrentTarget()
         {
+            if (currentTarget != null)
+            {
+                float maxDistanceSqr = detectionRang * detectionRang;
+                if ((currentTarget.position - detectionCenter.position).sqrMagnitude > maxDistanceSqr)
+                {
+                    outOfRangeTimer += Time.deltaTime;
+                    if (outOfRangeTimer >= exitCombatDelay)
+                    {
+                        currentTarget = null;
+                        outOfRangeTimer = 0f;
+                        return;
+                    }
+                }
+                else
+                {
+                    outOfRangeTimer = 0f;
+                }
+            }
+
             if(_animator.CheckAnimationTag("Motion"))
             {
                 if(_characterInputSystem.playerMovement.sqrMagnitude > 0)
                 {
                     currentTarget = null;
+                    outOfRangeTimer = 0f;
                 }
             }
         }
